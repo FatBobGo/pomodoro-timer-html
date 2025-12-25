@@ -670,7 +670,11 @@ const ChartRenderer = {
             canvas.width = width * dpr;
             canvas.height = height * dpr;
 
-            // Now apply scale (only once, after the reset)
+            // Clear and reset transform, then apply scale for crisp drawing
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (typeof ctx.setTransform === 'function') {
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+            }
             ctx.scale(dpr, dpr);
 
             // Padding adjusted for label visibility
@@ -782,7 +786,11 @@ const ChartRenderer = {
             canvas.width = width * dpr;
             canvas.height = height * dpr;
 
-            // Now apply scale (only once, after the reset)
+            // Clear and reset transform, then apply scale for crisp drawing
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (typeof ctx.setTransform === 'function') {
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+            }
             ctx.scale(dpr, dpr);
 
             const padding = { top: 10, right: 10, bottom: 25, left: 10 };
