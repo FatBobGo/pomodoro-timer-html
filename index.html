@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer - Focus & Track Your Productivity</title>
+    <meta name="description" content="A minimalist Pomodoro timer with Material 3 Expressive design. Track your focus sessions, view productivity statistics, and customize your workflow.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container" id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">
+                    <span class="logo-icon">🍅</span>
+                    <span class="logo-text">Pomodoro</span>
+                </h1>
+                <nav class="header-nav">
+                    <button class="nav-btn" id="statsBtn" aria-label="View Statistics">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3v18h18"/>
+                            <path d="M18 17V9"/>
+                            <path d="M13 17V5"/>
+                            <path d="M8 17v-3"/>
+                        </svg>
+                        <span>Stats</span>
+                    </button>
+                    <button class="nav-btn" id="settingsBtn" aria-label="Settings">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                        <span>Settings</span>
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Timer Card -->
+            <section class="timer-card" aria-label="Pomodoro Timer">
+                <!-- Mode Tabs -->
+                <div class="mode-tabs" role="tablist">
+                    <button class="mode-tab active" data-mode="pomodoro" role="tab" aria-selected="true">
+                        Pomodoro
+                    </button>
+                    <button class="mode-tab" data-mode="shortBreak" role="tab" aria-selected="false">
+                        Short Break
+                    </button>
+                    <button class="mode-tab" data-mode="longBreak" role="tab" aria-selected="false">
+                        Long Break
+                    </button>
+                </div>
+
+                <!-- Timer Display -->
+                <div class="timer-display">
+                    <svg class="timer-ring" viewBox="0 0 200 200">
+                        <circle class="timer-ring-bg" cx="100" cy="100" r="90" />
+                        <circle class="timer-ring-progress" cx="100" cy="100" r="90" />
+                    </svg>
+                    <div class="timer-content">
+                        <div class="timer-time" id="timerDisplay">25:00</div>
+                        <div class="timer-label" id="timerLabel">Focus Time</div>
+                    </div>
+                </div>
+
+                <!-- Timer Controls -->
+                <div class="timer-controls">
+                    <button class="control-btn secondary" id="resetBtn" aria-label="Reset Timer">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                            <path d="M3 3v5h5"/>
+                        </svg>
+                    </button>
+                    <button class="control-btn primary" id="startPauseBtn" aria-label="Start Timer">
+                        <svg class="icon-play" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3"/>
+                        </svg>
+                        <svg class="icon-pause hidden" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="6" y="4" width="4" height="16"/>
+                            <rect x="14" y="4" width="4" height="16"/>
+                        </svg>
+                    </button>
+                    <button class="control-btn secondary" id="skipBtn" aria-label="Skip to Next">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="5 4 15 12 5 20 5 4"/>
+                            <line x1="19" y1="5" x2="19" y2="19"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Session Counter -->
+                <div class="session-counter">
+                    <span id="sessionCount">0</span> / <span id="sessionGoal">4</span> sessions
+                </div>
+            </section>
+
+            <!-- Today's Stats -->
+            <section class="today-stats" aria-label="Today's Statistics">
+                <h2 class="section-title">Today</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🍅</div>
+                        <div class="stat-value" id="todayPomodoros">0</div>
+                        <div class="stat-label">Pomodoros</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-value" id="todayFocusTime">0h 0m</div>
+                        <div class="stat-label">Focus Time</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-value" id="currentStreak">0</div>
+                        <div class="stat-label">Day Streak</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Settings Modal -->
+        <div class="modal-overlay hidden" id="settingsModal">
+            <div class="modal" role="dialog" aria-labelledby="settingsTitle">
+                <div class="modal-header">
+                    <h2 id="settingsTitle">Settings</h2>
+                    <button class="modal-close" id="closeSettings" aria-label="Close Settings">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-section">
+                        <h3>Timer Durations</h3>
+                        <div class="setting-item">
+                            <label for="pomodoroMinutes">Pomodoro</label>
+                            <div class="setting-input-group">
+                                <input type="number" id="pomodoroMinutes" min="1" max="90" value="25">
+                                <span>min</span>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="shortBreakMinutes">Short Break</label>
+                            <div class="setting-input-group">
+                                <input type="number" id="shortBreakMinutes" min="1" max="30" value="5">
+                                <span>min</span>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="longBreakMinutes">Long Break</label>
+                            <div class="setting-input-group">
+                                <input type="number" id="longBreakMinutes" min="1" max="60" value="15">
+                                <span>min</span>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="longBreakInterval">Long Break After</label>
+                            <div class="setting-input-group">
+                                <input type="number" id="longBreakInterval" min="2" max="8" value="4">
+                                <span>sessions</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>Sound</h3>
+                        <div class="setting-item">
+                            <label for="soundEnabled">Alert Sound</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="soundEnabled" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label for="soundVolume">Volume</label>
+                            <div class="volume-slider">
+                                <input type="range" id="soundVolume" min="0" max="100" value="50">
+                                <span id="volumeValue">50%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="resetSettings">Reset to Defaults</button>
+                    <button class="btn btn-primary" id="saveSettings">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Modal -->
+        <div class="modal-overlay hidden" id="statsModal">
+            <div class="modal modal-large" role="dialog" aria-labelledby="statsTitle">
+                <div class="modal-header">
+                    <h2 id="statsTitle">Statistics</h2>
+                    <button class="modal-close" id="closeStats" aria-label="Close Statistics">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body stats-modal-body">
+                    <!-- Stats Tabs -->
+                    <div class="stats-tabs" role="tablist">
+                        <button class="stats-tab active" data-period="week" role="tab" aria-selected="true">
+                            Last 7 Days
+                        </button>
+                        <button class="stats-tab" data-period="month" role="tab" aria-selected="false">
+                            Last 30 Days
+                        </button>
+                    </div>
+
+                    <!-- Summary Stats -->
+                    <div class="stats-summary">
+                        <div class="summary-stat">
+                            <div class="summary-value" id="periodPomodoros">0</div>
+                            <div class="summary-label">Pomodoros</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="summary-value" id="periodFocusTime">0h</div>
+                            <div class="summary-label">Focus Time</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="summary-value" id="periodDailyAvg">0h</div>
+                            <div class="summary-label">Daily Average</div>
+                        </div>
+                    </div>
+
+                    <!-- Focus Time Chart -->
+                    <div class="chart-section">
+                        <h3>Focus Time</h3>
+                        <div class="chart-container">
+                            <canvas id="focusChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Productivity Hours Chart -->
+                    <div class="chart-section">
+                        <h3>Most Productive Hours</h3>
+                        <div class="chart-container heatmap-container">
+                            <canvas id="productivityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
