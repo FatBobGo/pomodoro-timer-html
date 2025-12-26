@@ -568,9 +568,45 @@ const UIController = {
         const stats = this.calculatePeriodStats(days);
 
         // Update summary
-        this.elements.periodPomodoros.textContent = stats.totalPomodoros;
-        this.elements.periodFocusTime.textContent = this.formatHours(stats.totalMinutes);
-        this.elements.periodDailyAvg.textContent = this.formatHours(stats.totalMinutes / days);
+        this.elements.periodPomodoros.textContent = Number.isFinite(stats.totalPomodoros) ? stats.totalPomodoros : 0;
+
+        // Defensive: ensure we always set readable focus-time and daily-average text
+        const totalMinutes = Number.isFinite(stats.totalMinutes) ? stats.totalMinutes : 0;
+        try {
+            const focusText = this.formatHours(totalMinutes);
+            if (this.elements.periodFocusTime) {
+                this.elements.periodFocusTime.textContent = focusText;
+                this.elements.periodFocusTime.setAttribute('title', focusText);
+                this.elements.periodFocusTime.setAttribute('aria-label', `Focus time ${focusText}`);
+            } else {
+                const el = document.getElementById('periodFocusTime');
+                if (el) el.textContent = focusText;
+            }
+        } catch (err) {
+            console.warn('Failed to format period focus time, falling back to 0m', err);
+            if (this.elements.periodFocusTime) {
+                this.elements.periodFocusTime.textContent = '0m';
+                this.elements.periodFocusTime.setAttribute('title', '0m');
+                this.elements.periodFocusTime.setAttribute('aria-label', 'Focus time 0m');
+            }
+        }
+
+        try {
+            const dailyAvgMinutes = Number.isFinite(stats.totalMinutes) ? stats.totalMinutes / days : 0;
+            const dailyText = this.formatHours(dailyAvgMinutes);
+            if (this.elements.periodDailyAvg) {
+                this.elements.periodDailyAvg.textContent = dailyText;
+                this.elements.periodDailyAvg.setAttribute('title', dailyText);
+                this.elements.periodDailyAvg.setAttribute('aria-label', `Daily average ${dailyText}`);
+            }
+        } catch (err) {
+            console.warn('Failed to format daily average, falling back to 0m', err);
+            if (this.elements.periodDailyAvg) {
+                this.elements.periodDailyAvg.textContent = '0m';
+                this.elements.periodDailyAvg.setAttribute('title', '0m');
+                this.elements.periodDailyAvg.setAttribute('aria-label', 'Daily average 0m');
+            }
+        }
 
         // Draw charts
         ChartRenderer.drawFocusChart(this.elements.focusChart, stats.dailyData, days);
@@ -728,19 +764,36 @@ const ChartRenderer = {
 
             // Draw bars with animation-ready structure
             data.forEach((d, i) => {
-                const barHeight = (d.minutes / (maxHours * 60)) * chartHeight;
+                // Calculate bar height with a minimum height for visibility
+                let barHeight = (d.minutes / (maxHours * 60)) * chartHeight;
+
+                // Ensure bars with data are visible (minimum 2px height)
+                if (d.minutes > 0 && barHeight < 2) {
+                    barHeight = 2;
+                }
+
                 const x = padding.left + barSpacing * i + (barSpacing - barWidth) / 2;
                 const y = padding.top + chartHeight - barHeight;
 
-                // Bar with gradient
-                const gradient = ctx.createLinearGradient(x, y, x, y + barHeight);
-                gradient.addColorStop(0, primaryColor);
-                gradient.addColorStop(1, this.adjustColor(primaryColor, -30));
+                // Only draw bar if there's data
+                if (d.minutes > 0) {
+                    // Bar with gradient
+                    const gradient = ctx.createLinearGradient(x, y, x, y + barHeight);
+                    gradient.addColorStop(0, primaryColor);
+                    gradient.addColorStop(1, this.adjustColor(primaryColor, -30));
 
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.roundRect(x, y, barWidth, barHeight, days <= 7 ? [4, 4, 0, 0] : [2, 2, 0, 0]);
-                ctx.fill();
+                    ctx.fillStyle = gradient;
+
+                    // Use roundRect if available, otherwise use regular rect
+                    if (typeof ctx.roundRect === 'function') {
+                        ctx.beginPath();
+                        ctx.roundRect(x, y, barWidth, barHeight, days <= 7 ? [4, 4, 0, 0] : [2, 2, 0, 0]);
+                        ctx.fill();
+                    } else {
+                        // Fallback for browsers without roundRect support
+                        ctx.fillRect(x, y, barWidth, barHeight);
+                    }
+                }
 
                 // X-axis labels
                 ctx.fillStyle = textColor;
@@ -748,7 +801,8 @@ const ChartRenderer = {
                 ctx.textAlign = 'center';
 
                 // Show labels at appropriate intervals
-                if (days <= 7 || i % labelInterval === 0 || i === barCount - 1) {
+                // For 30-day view, only show at regular intervals to prevent overlap
+                if (days <= 7 || i % labelInterval === 0) {
                     // Position label within the bottom padding area
                     ctx.fillText(d.label, x + barWidth / 2, height - 10);
                 }

@@ -755,6 +755,14 @@ body {
     text-overflow: ellipsis;
 }
 
+/* Make the Focus Time and Daily Avg values more visible regardless of current theme
+   This helps when color tokens are overridden by mode-specific themes. */
+#periodFocusTime,
+#periodDailyAvg {
+    color: var(--md-sys-color-on-surface) !important;
+    font-weight: 600;
+}
+
 .summary-label {
     font: var(--md-sys-typescale-label-medium);
     color: var(--md-sys-color-on-surface-variant);
