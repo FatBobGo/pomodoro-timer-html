@@ -899,3 +899,24 @@ body {
 .timer-card.complete .timer-ring-progress {
     animation: completeFlash 0.5s ease-in-out 3;
 }
+
+/* ===========================================
+   Footer
+   =========================================== */
+.app-footer {
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: auto;
+}
+
+.app-footer a {
+    font: var(--md-sys-typescale-label-medium);
+    color: var(--md-sys-color-on-surface-variant);
+    text-decoration: none;
+    transition: color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+
+.app-footer a:hover {
+    color: var(--md-sys-color-primary);
+    text-decoration: underline;
+}
