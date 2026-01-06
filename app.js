@@ -75,7 +75,8 @@ const StorageManager = {
     KEYS: {
         SETTINGS: 'pomodoro_settings',
         SESSIONS: 'pomodoro_sessions',
-        STREAK: 'pomodoro_streak'
+        STREAK: 'pomodoro_streak',
+        COMPLETED_POMODOROS: 'pomodoro_completed_count'
     },
 
     save(key, data) {
@@ -111,6 +112,14 @@ const StorageManager = {
 
     saveSessions(sessions) {
         this.save(this.KEYS.SESSIONS, sessions);
+    },
+
+    loadCompletedPomodoros() {
+        return this.load(this.KEYS.COMPLETED_POMODOROS, 0);
+    },
+
+    saveCompletedPomodoros(count) {
+        this.save(this.KEYS.COMPLETED_POMODOROS, count);
     },
 
     addSession(session) {
@@ -230,6 +239,7 @@ const TimerController = {
         // Record session if it was a pomodoro and not skipped
         if (AppState.currentMode === 'pomodoro' && !skipped) {
             AppState.completedPomodoros++;
+            StorageManager.saveCompletedPomodoros(AppState.completedPomodoros);
 
             const session = {
                 date: new Date().toISOString().split('T')[0],
@@ -320,6 +330,7 @@ const UIController = {
         this.bindEvents();
         this.loadSettings();
         this.loadSessions();
+        this.loadCompletedPomodoros();
         this.updateTodayStats();
         this.updateSessionCounter();
     },
@@ -393,6 +404,10 @@ const UIController = {
 
     loadSessions() {
         AppState.sessions = StorageManager.loadSessions();
+    },
+
+    loadCompletedPomodoros() {
+        AppState.completedPomodoros = StorageManager.loadCompletedPomodoros();
     },
 
     populateSettingsForm() {
